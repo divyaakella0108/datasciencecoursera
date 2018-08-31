@@ -8,14 +8,15 @@ setwd("C:/Users/212470996/Desktop/dataset/getdataDataset/UCI HAR Dataset")
 features <- read.table("./features.txt") #List of all features.
 activity_labels <- read.table("./activity_labels.txt", header = FALSE) #Activity name.
 
-X_test  <-   read.table("./test/X_test.txt", header = FALSE) #Training set.
-Y_test  <-   read.table("./test/y_test.txt", header = FALSE) #Training labels.
-subject_test <- read.table("./test/subject_test.txt", header = FALSE) # Test Subject ID
+#Read test dataset
+X_test  <-   read.table("./test/X_test.txt", header = FALSE) 
+Y_test  <-   read.table("./test/y_test.txt", header = FALSE) 
+subject_test <- read.table("./test/subject_test.txt", header = FALSE) 
 
-X_train <-   read.table("./train/X_train.txt", header = FALSE) #Test Set
-Y_train <-   read.table("./train/y_train.txt", header = FALSE) #Test labels 
-subject_train<- read.table("./train/subject_train.txt", header = FALSE) # Train Subject ID 
-
+#Read train dataset
+X_train <-   read.table("./train/X_train.txt", header = FALSE)
+Y_train <-   read.table("./train/y_train.txt", header = FALSE) 
+subject_train<- read.table("./train/subject_train.txt", header = FALSE)
 
 ##Assign Column Names to test datasets
 colnames(X_test)<- features[,2]
