@@ -1,0 +1,89 @@
+---
+title: "Practical Machine Learning PeerAssignment"
+author: "DivyaAkella"
+date: "September 21, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+The goal of this project is to predict the manner in which a certain group of people did exercise."classe" variable in the training set has movement category (sitting-down, standing-up, standing, walking, and sitting).TO create a report describing how to built  model, how cross validation is used, the expected out of sample error is. A prediction model is used to predict 20 different test cases.
+
+```{r downloadInputFiles}
+
+setwd("C:/Users/212470996/Desktop/Master_Repo/datasciencecoursera/PracticalMachineLearning")
+
+if(!file.exists("./plmTraining.csv"))
+{
+  URLTraining <-  "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv"
+  download.file(URLTraining,destfile = "plmTraining.csv")
+  
+}
+
+ plmTraining <- read.csv("./plmTraining.csv", header = TRUE, na.strings = c("NA",""))
+ dim(plmTraining)
+ 
+if(!file.exists("./plmTesting.csv"))
+{
+URLTesting <- "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv"
+download.file(URLTesting,destfile = "plmTesting.csv")
+
+}
+plmTesting <- read.csv("./plmTesting.csv", header = TRUE, na.strings = c("NA",""))
+dim(plmTesting)
+
+```
+
+## Preprocessing Data
+
+Remove the columns which have 70% of data missing and columns that are not needed
+
+```{r Preprocessing}
+library(caret)
+
+plmTraining_Rm_NoDataClmns <- plmTraining[,(colSums(is.na(plmTraining))<0.7*nrow(plmTraining))] 
+plmTesting_final <- plmTesting[,(colSums(is.na(plmTesting))<0.7*nrow(plmTesting))]
+
+plmTraining_final <- plmTraining_Rm_NoDataClmns[,-c(1:7)]
+
+  
+```
+
+## Get Validation Dataset & Training Dataset
+
+```{r CreateTrainAndValidationDatasets}
+library(caret)
+inTrain <- createDataPartition(y= plmTraining_final$classe, p= 0.7 , list = FALSE)
+Training <- plmTraining_final[inTrain,]
+Validation <- plmTraining_final[-inTrain,]
+
+```
+
+
+## Apply Random Forest method
+```{r RamdomForestPredict}
+
+   
+  set.seed(123)
+modFit_rf <- train(classe ~ ., method = "rf", data = Training,trControl =    trainControl(method = "cv", number = 4, allowParallel = TRUE, verboseIter=TRUE))   
+   
+   Validation_pred_rf <- predict(modFit_rf,Validation)  
+   confusionMatrix(Validation_pred_rf,Validation$classe)
+
+```
+
+ 
+##Predict Testing Data
+
+```{r PredictTestData}
+
+
+Testing_Pred <- predict(modFit_rf,plmTesting_final)
+Testing_Pred
+
+
+```
